@@ -1,0 +1,19 @@
+{% load static %}
+
+<html>
+<head>
+  <title>Soundclone</title>
+</head>
+<body>
+    {% if request.user.is_authenticated %}
+        <h1> Welcome, {{ request.user.username }}!</h1>
+    {% endif %}
+    <h1>Recent Tracks</h1>
+    <ul>
+        {% for track in tracks %}
+            <li>{{ track.artist }} - <a href="{% url 'track-detail' track.pk %}">{{ track.title }}</a></li>
+        {% endfor %}
+        <a href="{% url 'track-create' %}">Create a track</a>
+    </ul>
+</body>
+</html>
