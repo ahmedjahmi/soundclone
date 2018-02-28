@@ -1,5 +1,6 @@
 from django.http import Http404
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
 
 from .models import Track
 from .forms import TrackForm
@@ -33,3 +34,8 @@ def track_create_view(request):
 def track_detail_view(request, pk):
     track = Track.objects.get(pk=pk)
     return render(request, "templates/track_detail.html", { 'track': track })
+
+def user_detail_view(request, username):
+    user = User.objects.get(username=username)
+    tracks = Track.objects.filter(artist=user)
+    return render(request, "templates/user_detail.html", { 'user': user, 'tracks': tracks })

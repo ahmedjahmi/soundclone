@@ -27,5 +27,6 @@ urlpatterns = [
     path('tracks/<int:pk>', views.track_detail_view, name='track-detail'),
     path('users/login', auth_views.login, name='login'),
     path('users/logout', auth_views.logout, name='logout'),
+    path('users/<str:username>', views.user_detail_view, name='user-detail'),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
