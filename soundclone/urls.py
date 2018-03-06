@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.track_list_view, name='index'),
     path('tracks/create', views.track_create_view, name='track-create'),
     path('tracks/<int:pk>', views.track_detail_view, name='track-detail'),
+    path('users/register', views.user_create_view, name='user-create'),
     path('users/login', auth_views.login, name='login'),
     path('users/logout', auth_views.logout, name='logout'),
     path('users/<str:username>', views.user_detail_view, name='user-detail'),
