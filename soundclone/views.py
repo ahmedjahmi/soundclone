@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import Track
+from .models import Track, Like
 from .forms import TrackForm
 
 
@@ -26,6 +26,8 @@ def track_create_view(request):
                 file=cd['file'],
                 duration=200
             )
+            # TODO: redirect also requires a track primary key
+            # i.e pk=track.pk
             return redirect('track-detail')
         else:
             return render(request, "templates/track_create.html", { 'form': form })
@@ -36,6 +38,29 @@ def track_create_view(request):
 def track_detail_view(request, pk):
     track = Track.objects.get(pk=pk)
     return render(request, "templates/track_detail.html", { 'track': track })
+
+def track_like_view(request, pk):
+    if request.user.is_authenticated:
+        track = Track.objects.get(pk=pk)
+        if track.is_liked_by(request.user):
+            return redirect('track-detail', pk=track.pk)
+        else:
+            like = Like.objects.create(track=track, user=request.user)
+            return redirect('track-detail', pk=track.pk)
+    else:
+        return redirect('login')
+
+def track_unlike_view(request, pk):
+    if request.user.is_authenticated:
+        track = Track.objects.get(pk=pk)
+        if track.is_liked_by(request.user):
+            track.like_set.filter(user=request.user).delete()
+            return redirect('track-detail', pk=track.pk)
+        else:
+            return redirect('track-detail', pk=track.pk)
+    else:
+        return redirect('login')
+# TODO: add decorator for login authorization
 
 def user_create_view(request):
     if request.method == 'POST':

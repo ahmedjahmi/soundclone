@@ -15,10 +15,16 @@ class Track(models.Model):
         max_length=100
     )
     artist = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    # likes
     # shares
 
+    def is_liked_by(self, user):
+        return self.like_set.filter(user=user).exists()
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    track = models.ForeignKey(Track, on_delete=models.CASCADE)
+    
 
 
 

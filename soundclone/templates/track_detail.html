@@ -7,6 +7,23 @@
 <body>
     <h1>{{ track.artist }}</h1>
     <h1>{{ track.title }}</h1>
+    
+    <form method="POST" action="/tracks/{{ track.pk }}/like">
+        {% csrf_token %}
+        <input type="submit" value="Like"></input>
+    </form>
+
+    <form method="POST" action="/tracks/{{ track.pk }}/unlike">
+        {% csrf_token %}
+        <input type="submit" value="Unlike"></input>
+    </form>
+    "number of likes" {{ track.like_set.count }}
+
+    <!-- TODO: make this work -->
+    {# if track.is_liked_by current_user #}
+    {# else #}
+    {# end #}
+
     <audio src="{{ track.file.url }}" autoplay type="audio/mp3" controls>
         Your browser does not support the <code>audio</code> element.
     </audio>
