@@ -1,13 +1,15 @@
-<html>
-<head>
-  <title>Upload Track</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Upload | Soundclone
+{% endblock %}
+
+{% block content %}
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.errors }}
         {{ form.as_p }}
         <input type="submit"></input>
     </form>
-</body>
-</html>
+{% endblock %}

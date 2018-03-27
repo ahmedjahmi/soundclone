@@ -1,10 +1,11 @@
+{% extends "base.html" %}
 {% load static %}
 
-<html>
-<head>
-  <title>{{ track.title }}</title>
-</head>
-<body>
+{% block title %}
+    {{ track.title }} | Soundclone
+{% endblock %}
+
+{% block content %}
     <h1>{{ track.artist }}</h1>
     <h1>{{ track.title }}</h1>
     
@@ -27,5 +28,4 @@
     <audio src="{{ track.file.url }}" autoplay type="audio/mp3" controls>
         Your browser does not support the <code>audio</code> element.
     </audio>
-</body>
-</html>
+{% endblock %}

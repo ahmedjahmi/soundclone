@@ -1,8 +1,11 @@
-<html>
-<head>
-  <title>Register</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Sign up! | Soundclone
+{% endblock %}
+
+{% block content %}
     <form method="POST">
         {% csrf_token %}
         {{ form.errors }}
@@ -10,5 +13,4 @@
 
         <input type="submit"></input>
     </form>
-</body>
-</html>
+{% endblock %}

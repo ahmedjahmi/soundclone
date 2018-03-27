@@ -1,0 +1,31 @@
+{% load static %}
+
+<html>
+<head>
+    <title>{% block title %}Soundclone{% endblock %}</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js" ></script>
+    <link rel="stylesheet/less" type="text/css" href="{% static "layout.less" %}" />
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <ul>
+                <li><a href="{% url 'index' %}">Soundclone</a></li>
+                <li><a href="{% url 'track-create' %}">Upload</a></li>
+                {% if request.user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                    <li>
+                        <a href="{% url 'user-detail' request.user.username %}">
+                        {{ request.user.username }}
+                        </a>
+                    </li>
+                {% else %}
+                <li><a href="{% url 'login' %}">Login</a> / <a href="{% url 'user-create' %}">Sign up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    {% block content %}{% endblock %}
+</body>
+</html>
