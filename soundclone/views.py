@@ -22,13 +22,13 @@ def track_create_view(request):
             track = Track.objects.create(
                 title=cd['title'],
                 artist_name=cd['artist_name'],
+                artist=request.user,
                 artwork=cd['artwork'],
                 file=cd['file'],
                 duration=200
             )
-            # TODO: redirect also requires a track primary key
-            # i.e pk=track.pk
-            return redirect('track-detail')
+
+            return redirect('track-detail', pk=track.pk)
         else:
             return render(request, "templates/track_create.html", { 'form': form })
     else:
