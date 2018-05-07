@@ -1,7 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+
 {% block title %}Login{% endblock %}
 
+{% block body-id %}page--login{% endblock %}
+
 {% block content %}
-  <h2>Login</h2>
+  <h3>Login</h3>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}

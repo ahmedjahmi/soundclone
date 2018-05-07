@@ -5,12 +5,16 @@
     Home | Soundclone
 {% endblock %}
 
+{% block body-id %}page--track-list{% endblock %}
+
 {% block content %}
-    <h1>Recent Tracks</h1>
-    <ul>
+<body>
+    <h3>Recent Tracks</h3>
+    <ul id="recent-tracks">
         {% for track in tracks %}
-            <li>{{ track.artist }} - <a href="{% url 'track-detail' track.pk %}">{{ track.title }}</a></li>
+            <li>{{ track.artist }}<a href="{% url 'track-detail' track.pk %}">{{ track.title }}</a></li>
         {% endfor %}
         <a href="{% url 'track-create' %}">Create a track</a>
     </ul>
+</body>
 {% endblock %}

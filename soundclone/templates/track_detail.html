@@ -5,7 +5,10 @@
     {{ track.title }} | Soundclone
 {% endblock %}
 
+{% block body-id %}page--track-detail{% endblock %}
+
 {% block content %}
+<body>
     <h1>{{ track.artist }}</h1>
     <h1>{{ track.title }}</h1>
     
@@ -25,7 +28,10 @@
     {# else #}
     {# end #}
 
-    <audio src="{{ track.file.url }}" autoplay type="audio/mp3" controls>
-        Your browser does not support the <code>audio</code> element.
-    </audio>
+    <footer>
+        <audio src="{{ track.file.url }}" autoplay type="audio/mp3" controls>
+            Your browser does not support the <code>audio</code> element.
+        </audio>
+    </footer>
+</body>
 {% endblock %}

@@ -5,7 +5,10 @@
     Sign up! | Soundclone
 {% endblock %}
 
+{% block body-id %}page--user-create{% endblock %}
+
 {% block content %}
+<body>
     <form method="POST">
         {% csrf_token %}
         {{ form.errors }}
@@ -13,4 +16,5 @@
 
         <input type="submit"></input>
     </form>
+</body>
 {% endblock %}

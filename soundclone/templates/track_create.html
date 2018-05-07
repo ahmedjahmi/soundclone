@@ -5,11 +5,15 @@
     Upload | Soundclone
 {% endblock %}
 
+{% block body-id %}page--track-create{% endblock %}
+
 {% block content %}
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.errors }}
-        {{ form.as_p }}
-        <input type="submit"></input>
-    </form>
+    <body>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.errors }}
+            {{ form.as_p }}
+            <input type="submit"></input>
+        </form>
+    </body>
 {% endblock %}
