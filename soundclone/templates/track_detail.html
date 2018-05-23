@@ -9,29 +9,56 @@
 
 {% block content %}
 <body>
-    <h1>{{ track.artist }}</h1>
-    <h1>{{ track.title }}</h1>
-    
-    <form method="POST" action="/tracks/{{ track.pk }}/like">
-        {% csrf_token %}
-        <input type="submit" value="Like"></input>
-    </form>
+    <div class="track-list--container">
+            <ul class="track-list">
+                    <li class="track-list--item">
+                        <div class="track-body">
+                            <a class="track-body--link" href="{% url 'track-detail' track.pk %}">
+                                <div class="track-artwork--space">
+                                        <div class="track--artwork" style="background-image: url('/media/{{ track.artwork }}')">
+                                        </div>
+                                </div>
+                                <div class="track-info--space">
+                                        <div class="track-info--artist">
+                                            {{ track.artist }}
+                                        </div>
+                                        <div class="track-info--title">
+                                            {{ track.title }}
+                                        </div>
+                                        <div class="track-info--likes">
+                                            {{ track.like_set.count }} Likes
+                                        </div>
+                                </div>
+                            </a>
+                        </div>
 
-    <form method="POST" action="/tracks/{{ track.pk }}/unlike">
-        {% csrf_token %}
-        <input type="submit" value="Unlike"></input>
-    </form>
-    "number of likes" {{ track.like_set.count }}
+                        <div class="track-function">
+                            <div class="track-like-unlike">
+                                <form method="POST" action="/tracks/{{ track.pk }}/like">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Like"></input>
+                                </form>
+
+                                <form method="POST" action="/tracks/{{ track.pk }}/unlike">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Unlike"></input>
+                                </form>
+                            </div>
+                            <div class="track-audio">
+                                <audio class="track-audio--sound" src="{{ track.file.url }}" autoplay type="audio/mp3" controls>
+                                    Your browser does not support the <code>audio</code> element.
+                                </audio>
+                            </div>
+                        </div>
+                    </li>
+            </ul>
+        </div>
 
     <!-- TODO: make this work -->
     {# if track.is_liked_by current_user #}
     {# else #}
     {# end #}
 
-    <footer>
-        <audio src="{{ track.file.url }}" autoplay type="audio/mp3" controls>
-            Your browser does not support the <code>audio</code> element.
-        </audio>
-    </footer>
+    
 </body>
 {% endblock %}

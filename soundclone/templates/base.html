@@ -3,74 +3,12 @@
 <html>
     <head>
         <title>{% block title %}Soundclone{% endblock %}</title>
+        <link rel="stylesheet/less" type="text/css" href="{% static "css/layout.less" %}" />
+        <link rel="stylesheet/less" type="text/css" href="{% static "css/components.less" %}" />
+        <link rel="stylesheet/less" type="text/css" href="{% static "css/page-specific.less" %}" />
         <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.0.0/less.min.js" ></script>
-        <link rel="stylesheet/less" type="text/css" href="{% static "layout.less" %}" />
-        <style type="text/css">
-            /* CSS goes here */
-
-            .header ul {
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
-                background-color: #FFAF0A;
-            }
-
-            li {
-                float: left;
-            }
-
-            li a {
-                display: block;
-                color: white;
-                text-align: center;
-                padding: 14px 16px;
-                text-decoration: none;
-            }
-
-            /* Change the link color to #111 (black) on hover */
-            li a:hover {
-                background-color: #FFAF0A;
-            }
-
-            #page--track-detail {
-                background-color: #EB9100;
-            }
-
-            #page--track-create {
-                background-color: #F59B00;
-            }
-
-            #page--login {
-                background-color: #D77D00;
-            }
-
-            #page--user-create {
-                background-color: #FFC31E;
-            }
-
-            #page--track-list ul {
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-            }
-
-            #page--track-list {
-                background-color: orange;
-            }
-
-            #recent-tracks li {
-                float: none;
-            }
-
-            #recent-tracks ul {
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-            }
-        </style>
     </head>
-    <body id="{% block body-id %}home{% endblock %}">
+    <body id="{% block body-id %}{% endblock %}">
         <header class="header">
             <nav class="nav">
                 <ul>
@@ -84,8 +22,8 @@
                             </a>
                         </li>
                     {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
                     <li><a href="{% url 'user-create' %}">Sign up</a></li>
+                    <li><a href="{% url 'login' %}">Login</a></li>
                     {% endif %}
                 </ul>
             </nav>

@@ -1,5 +1,53 @@
+.clearfix() {
+  &:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+  }
+}
+
+body {
+    background-color: #FFAF0A;
+    margin: 0;
+}
+
+audio {
+    background-color: #FFAF0A;
+}
+
 .nav {
-    li {
-        display: inline-block;
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        background-color: #d77d00;
+        .clearfix;
+    }
+
+    li { 
+        display: block;
+        float: right;
+        padding: 20px;
+        background-color: #d77d00;
+
+
+        &:first-child { 
+            float: left;
+         }
+        ;
+
+        &:hover { 
+            background-color: #d77d00;
+            opacity: 0.8;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+            font-family: Verdana;
+            letter-spacing: 3px;
+        }
     }
 }
