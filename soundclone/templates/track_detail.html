@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+
 {% load static %}
+{% load track_tags %}
 
 {% block title %}
     {{ track.title }} | Soundclone
@@ -34,21 +36,46 @@
 
                         <div class="track-function">
                             <div class="track-like-unlike">
-                                <form method="POST" action="/tracks/{{ track.pk }}/like">
-                                    {% csrf_token %}
-                                    <input type="submit" value="Like"></input>
-                                </form>
-
+                                {% if request.user.is_authenticated and track|is_liked_by:request.user %}
                                 <form method="POST" action="/tracks/{{ track.pk }}/unlike">
                                     {% csrf_token %}
                                     <input type="submit" value="Unlike"></input>
                                 </form>
+                                {% else %}
+                                <form method="POST" action="/tracks/{{ track.pk }}/like">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Like"></input>
+                                </form>
+                                {% endif %}
                             </div>
                             <div class="track-audio">
                                 <audio class="track-audio--sound" src="{{ track.file.url }}" autoplay type="audio/mp3" controls>
                                     Your browser does not support the <code>audio</code> element.
                                 </audio>
                             </div>
+                        </div>
+
+                        <div class="track-comment">
+                            <ul>
+                                {% for comment in comments %}
+                                <li>
+
+                            {{ comment }}
+
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ form.errors }}
+                                {{ form.as_p }}
+                                <input type="submit"></input>
+                            </form>
+
+                            <div class="track--upload">
+                                <a class="track-upload--link" href="{% url 'track-detail' %}">Upload</a>
+                            </div>
+
                         </div>
                     </li>
             </ul>

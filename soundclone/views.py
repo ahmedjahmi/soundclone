@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import Track, Like
-from .forms import TrackForm
+from .models import Track, Like, Comment
+from .forms import TrackForm, CommentForm
 
 
 def track_list_view(request):
@@ -37,7 +37,8 @@ def track_create_view(request):
 
 def track_detail_view(request, pk):
     track = Track.objects.get(pk=pk)
-    return render(request, "templates/track_detail.html", { 'track': track })
+    comments = Comment.objects.filter(track=track)
+    return render(request, "templates/track_detail.html", { 'track': track, 'comments': comments })
 
 def track_like_view(request, pk):
     if request.user.is_authenticated:
@@ -61,6 +62,33 @@ def track_unlike_view(request, pk):
     else:
         return redirect('login')
 # TODO: add decorator for login authorization
+
+def comment_create_view(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+
+            # take data from form and save as new record
+            track = Track.objects.get(pk=pk)
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                # TODO: save model form here instead
+                cd = form.cleaned_data
+
+                comment = Comment.objects.create(
+                    user=request.user,
+                    track=track,
+                    body=cd['body'],
+                )
+
+                return redirect('track-detail', pk=track.pk)
+            else:
+                return render(request, "templates/track_detail.html", { 'track': track, 'form': form, 'comments': comments })
+        else:
+            redirect('login')
+    else:
+        form = CommentForm()
+        track = Track.objects.get(pk=pk)
+        return render(request, "templates/track_detail.html", { 'track': track, 'form': form, 'comments': comments })
 
 def user_create_view(request):
     if request.method == 'POST':

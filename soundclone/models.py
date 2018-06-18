@@ -20,11 +20,15 @@ class Track(models.Model):
     def is_liked_by(self, user):
         return self.like_set.filter(user=user).exists()
 
-
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     track = models.ForeignKey(Track, on_delete=models.CASCADE)
-    
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    track = models.ForeignKey(Track, on_delete=models.CASCADE)
+    body = models.TextField()
 
 
 
