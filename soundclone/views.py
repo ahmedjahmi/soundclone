@@ -37,8 +37,13 @@ def track_create_view(request):
 
 def track_detail_view(request, pk):
     track = Track.objects.get(pk=pk)
-    comments = Comment.objects.filter(track=track)
-    return render(request, "templates/track_detail.html", { 'track': track, 'comments': comments })
+    comments = track.comment_set.all() # Comment.object.filter(track=track) is the same thing
+    form = CommentForm()
+    return render(
+        request,
+        "templates/track_detail.html",
+        { 'track': track, 'comments': comments, 'form': form }
+    )
 
 def track_like_view(request, pk):
     if request.user.is_authenticated:
@@ -63,7 +68,7 @@ def track_unlike_view(request, pk):
         return redirect('login')
 # TODO: add decorator for login authorization
 
-def comment_create_view(request):
+def comment_create_view(request, pk):
     if request.method == 'POST':
         if request.user.is_authenticated:
 
@@ -82,13 +87,19 @@ def comment_create_view(request):
 
                 return redirect('track-detail', pk=track.pk)
             else:
-                return render(request, "templates/track_detail.html", { 'track': track, 'form': form, 'comments': comments })
+                return render(
+                    request,
+                    "templates/track_detail.html",
+                    {
+                        'track': track,
+                        'form': form,
+                        'comments': comments
+                    }
+                )
         else:
-            redirect('login')
+            return redirect('login')
     else:
-        form = CommentForm()
-        track = Track.objects.get(pk=pk)
-        return render(request, "templates/track_detail.html", { 'track': track, 'form': form, 'comments': comments })
+        raise Http404("Invalid request, sorry!")
 
 def user_create_view(request):
     if request.method == 'POST':

@@ -58,14 +58,10 @@
                         <div class="track-comment">
                             <ul>
                                 {% for comment in comments %}
-                                <li>
-
-                            {{ comment }}
-
-                                </li>
+                                    <li>{{ comment.body }}</li>
                                 {% endfor %}
                             </ul>
-                            <form method="POST" enctype="multipart/form-data">
+                            <form method="POST" action="{% url 'comment-create' track.pk %}">
                                 {% csrf_token %}
                                 {{ form.errors }}
                                 {{ form.as_p }}
@@ -73,7 +69,7 @@
                             </form>
 
                             <div class="track--upload">
-                                <a class="track-upload--link" href="{% url 'track-detail' %}">Upload</a>
+                                <a class="track-upload--link" href="{% url 'track-detail' track.pk %}">Upload</a>
                             </div>
 
                         </div>
