@@ -56,17 +56,28 @@
                         </div>
 
                         <div class="track-comment">
-                            <ul>
-                                {% for comment in comments %}
-                                    <li>{{ comment.body }}</li>
-                                {% endfor %}
-                            </ul>
-                            <form method="POST" action="{% url 'comment-create' track.pk %}">
-                                {% csrf_token %}
-                                {{ form.errors }}
-                                {{ form.as_p }}
-                                <input type="submit"></input>
-                            </form>
+                            <div class="track-comment--list">
+                                <ul>
+                                    {% for comment in comments %}
+                                        <li>
+                                            <div class="track-comment--user">
+                                                {{ comment.user }} said
+                                            </div>
+                                            <div class="track-comment--body">
+                                                " {{ comment.body }} "
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="track-comment--form">
+                                <form method="POST" action="{% url 'comment-create' track.pk %}">
+                                    {% csrf_token %}
+                                    {{ form.errors }}
+                                    {{ form.as_p }}
+                                    <input type="submit"></input>
+                                </form>
+                            </div>
 
                             <div class="track--upload">
                                 <a class="track-upload--link" href="{% url 'track-detail' track.pk %}">Upload</a>
