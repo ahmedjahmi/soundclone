@@ -28,6 +28,7 @@ urlpatterns = [
     path('tracks/<int:pk>/like', views.track_like_view, name='track-like'),
     path('tracks/<int:pk>/unlike', views.track_unlike_view, name='track-unlike'),
     path('tracks/<int:pk>/comment', views.comment_create_view, name='comment-create'),
+    path('comments/<int:pk>/delete', views.comment_delete_view, name='comment-delete'),
     path('users/register', views.user_create_view, name='user-create'),
     path('users/login', auth_views.login, name='login'),
     path('users/logout', auth_views.logout, name='logout'),

@@ -101,6 +101,17 @@ def comment_create_view(request, pk):
     else:
         raise Http404("Invalid request, sorry!")
 
+def comment_delete_view(request, pk):
+    if request.user.is_authenticated:
+        comment = Comment.objects.get(pk=pk)
+        track = comment.track
+
+        comment.delete()
+        return redirect('track-detail', pk=track.pk)
+    else:
+        return redirect('login')
+
+
 def user_create_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
