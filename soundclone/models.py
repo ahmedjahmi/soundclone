@@ -37,9 +37,6 @@ class Playlist(models.Model):
     tracks = models.ManyToManyField(Track)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-
-
-
 # User
 # Playlist
 # Artwork

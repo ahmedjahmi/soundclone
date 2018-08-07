@@ -7,34 +7,51 @@
 
 {% block content %}
     <h1 class="page-title--user">Welcome, {{ user.username }}!</h1>
+
+    <div class="playlist-list--container">
+        <ul class="playlist-list">
+            {% for playlist in playlists %}
+            <li class="playlist-list--item">
+                <div class="playlist-button">
+                    <a class="playlist-button--link" href="{% url 'playlist-detail' playlist.pk %}"> {{ playlist.name }}
+                    </a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
     <div class="track-list--container">
-            <ul class="track-list">
-                {% for track in tracks %}
-                    <li class="track-list--item">
-                        <div class="track-body">
-                            <a class="track-body--link" href="{% url 'track-detail' track.pk %}">
-                                <div class="track-artwork--space">
-                                        <div class="track--artwork" style="background-image: url('/media/{{ track.artwork }}')">
-                                        </div>
+         <ul class="track-list">
+            {% for track in tracks %}
+                <li class="track-list--item">
+                    <div class="track-body">
+                        <a class="track-body--link" href="{% url 'track-detail' track.pk %}">
+                            <div class="track-artwork--space">
+                                    <div class="track--artwork" style="background-image: url('/media/{{ track.artwork }}')">
+                                    </div>
+                            </div>
+                            <div class="track-info--space">
+                                <div class="track-info--artist">
+                                    {{ track.artist }}
                                 </div>
-                                <div class="track-info--space">
-                                        <div class="track-info--artist">
-                                            {{ track.artist }}
-                                        </div>
-                                        <div class="track-info--title">
-                                            {{ track.title }}
-                                        </div>
-                                        <div class="track-info--likes">
-                                            {{ track.like_set.count }} Likes
-                                        </div>
+                                <div class="track-info--title">
+                                    {{ track.title }}
                                 </div>
-                            </a>
-                        </div>
-                    </li>
-                {% endfor%}
-            </ul>
-        </div>
+                                <div class="track-info--likes">
+                                    {{ track.like_set.count }} Likes
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
     <h3 class="track--upload">
-        <a class="track-upload--link"href="{% url 'track-create' %}">Upload</a>
+        <a class="track-upload--link"href="{% url 'track-create' %}">Upload a Track!</a>
+    </h3>
+    <h3 class="playlist--create">
+        <a class="playlist-create--link"href="{% url 'playlist-create' %}">Make a Playlist!</a>
     </h3>
 {% endblock %}

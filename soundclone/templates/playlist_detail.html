@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Playlist | Soundclone
+{% endblock %}
+
+{% block body-id %}page--playlist-detail{% endblock %}
+
+{% block content %}
+<body>
+    <h1 class="page-title">Here's your playlist!</h1>
+    <h4> {{ playlist.name }} </h4>
+        <div class="track-list--container">
+            <ul class="track-list">
+                {% for track in tracks %}
+                    <li class="track-list--item">
+                        <div class="track-body">
+                            <a class="track-body--link" href="{% url 'track-detail' track.pk %}">
+                                <div class="track-artwork--space">
+                                        <div class="track--artwork" style="background-image: url('/media/{{ track.artwork }}')">
+                                        </div>
+                                </div>
+                                <div class="track-info--space">
+                                        <div class="track-info--artist">
+                                            {{ track.artist }}
+                                        </div>
+                                        <div class="track-info--title">
+                                            {{ track.title }}
+                                        </div>
+                                        <div class="track-info--likes">
+                                            {{ track.like_set.count }} Likes
+                                        </div>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                {% endfor%}
+            </ul>
+        </div>
+    <div class="track--upload">
+        <a class="track-upload--link"href="{% url 'track-create' %}">Upload</a>
+    </div>
+</body>
+{% endblock %}
