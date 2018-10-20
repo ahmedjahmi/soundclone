@@ -11,122 +11,137 @@
 
 {% block content %}
 <body>
-        <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-      Launch demo modal
-    </button>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.form--unlike').on('submit', function(event) {
+            event.preventDefault();
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Which playlist?</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <ul> 
-                {% for playlist in playlists %}
-                    <li>
-                        {{ playlist.name }}
-                        <form method="POST" action="/playlists/{{ playlist.pk }}/add-track/{{ track.pk }}">
-                            {% csrf_token %}
-                            <input type="submit" value="Add Track"></input>
-                        </form>
-                    </li>
-                {% endfor %}
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
+            $.ajax({
+                url:"/tracks/{{track.pk}}/unlike",
+                method: "POST",
+                data: $(this).serialize(),
+                dataType: "json"
+            }).done(function(data, textStatus, jqXHR) {
+                $('.form--unlike').removeClass('active');
+                $('.form--like').addClass('active');
+                $('.track-info--likes').html(data.like + " Likes" );
+            });
+        });
+
+        $('.form--like').on('submit', function(event) {
+            event.preventDefault();
+
+            $.ajax({
+                url:"/tracks/{{track.pk}}/like",
+                method: "POST",
+                data: $(this).serialize(),
+                dataType: "json"
+            }).done(function(data, textStatus, jqXHR) {
+                $('.form--like').removeClass('active');
+                $('.form--unlike').addClass('active');
+                $('.track-info--likes').html(data.like + " Likes" );
+            });
+        });
+    });
+
+</script>
+    <div class="modal--overlay">
+        <div class="modal">
+            <h4>Which playlist?</h4>
+            <hr>
+                <ul> 
+                    {% for playlist in playlists %}
+                        <li>
+                            {{ playlist.name }}
+                            <form method="POST" action="/playlists/{{ playlist.pk }}/add-track/{{ track.pk }}">
+                                {% csrf_token %}
+                                <input type="submit" value="Add Track"></input>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <button class="modal--close">Close</button>
         </div>
-      </div>
     </div>
-
     <div class="track-list--container">
-            <ul class="track-list">
-                    <li class="track-list--item">
-                        <div class="track-body">
-                            <a class="track-body--link" href="{% url 'track-detail' track.pk %}">
-                                <div class="track-artwork--space">
-                                        <div class="track--artwork" style="background-image: url('/media/{{ track.artwork }}')">
-                                        </div>
+        <ul class="track-list">
+            <li class="track-list--item">
+                <div class="track-body">
+                    <a class="track-body--link" href="{% url 'track-detail' track.pk %}">
+                        <div class="track-artwork--space">
+                                <div class="track--artwork" style="background-image: url('/media/{{ track.artwork }}')">
                                 </div>
-                                <div class="track-info--space">
-                                        <div class="track-info--artist">
-                                            {{ track.artist }}
-                                        </div>
-                                        <div class="track-info--title">
-                                            {{ track.title }}
-                                        </div>
-                                        <div class="track-info--likes">
-                                            {{ track.like_set.count }} Likes
-                                        </div>
+                        </div>
+                        <div class="track-info--space">
+                                <div class="track-info--artist">
+                                    {{ track.artist }}
                                 </div>
-                            </a>
+                                <div class="track-info--title">
+                                    {{ track.artist_name }} | 
+                                    {{ track.title }}
+                                </div>
+                                <div class="track-info--likes">
+                                    {{ track.like_set.count }} Likes
+                                </div>
                         </div>
+                    </a>
+                </div>
 
-                        <div class="track-function">
-                            <div class="track-like-unlike">
-                                {% if request.user.is_authenticated and track|is_liked_by:request.user %}
-                                <form method="POST" action="/tracks/{{ track.pk }}/unlike">
-                                    {% csrf_token %}
-                                    <input type="submit" value="Unlike"></input>
-                                </form>
-                                {% else %}
-                                <form method="POST" action="/tracks/{{ track.pk }}/like">
-                                    {% csrf_token %}
-                                    <input type="submit" value="Like"></input>
-                                </form>
-                                {% endif %}
-                            </div>
-                            <div class="track-audio">
-                                <audio class="track-audio--sound" src="{{ track.file.url }}" autoplay type="audio/mp3" controls>
-                                    Your browser does not support the <code>audio</code> element.
-                                </audio>
-                            </div>
-                        </div>
+                <div class="track-function">
+                    <div class="track-like-unlike">
+                        <form class="form--unlike {% if request.user.is_authenticated and track|is_liked_by:request.user %}active{% endif %}" method="POST" action="/tracks/{{ track.pk }}/unlike">
+                            {% csrf_token %}
+                            <input class="track-unlike--button" type="submit" value="Unlike"></input>
+                        </form>
+                        <form class="form--like {% if request.user.is_authenticated and not track|is_liked_by:request.user %}active{% endif %}" method="POST" action="/tracks/{{ track.pk }}/like">
+                            {% csrf_token %}
+                            <input class="track-like--button" type="submit" value="Like"></input>
+                        </form>
+                    </div>
+                    <button class="modal--trigger">Add to playlist</button>
+                    <div class="track-audio">
+                        <audio class="track-audio--sound" src="{{ track.file.url }}" autoplay type="audio/mp3" controls>
+                            Your browser does not support the <code>audio</code> element.
+                        </audio>
+                    </div>
+                </div>
 
-                        <div class="track-comment">
-                            <div class="track-comment--list">
-                                <ul>
-                                    {% for comment in comments %}
-                                        <li>
-                                            <div class="track-comment--user">
-                                                {{ comment.user }} said
-                                            </div>
-                                            <div class="track-comment--body">
-                                                " {{ comment.body }} "
-                                                <form method="POST" action="{% url 'comment-delete' comment.pk %}">
-                                                    {% csrf_token %}
-                                                    <input value="delete" type="submit"></input>
-                                                </form>
-                                            </div>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="track-comment--form">
-                                <form method="POST" action="{% url 'comment-create' track.pk %}">
-                                    {% csrf_token %}
-                                    {{ form.errors }}
-                                    {{ form.as_p }}
-                                    <input type="submit"></input>
-                                </form>
-                            </div>
+                <div class="track-comment">
+                    <div class="track-comment--list">
+                        <ul>
+                            {% for comment in comments %}
+                                <li>
+                                    <div class="track-comment--user">
+                                        {{ comment.user }} said
+                                    </div>
+                                    <div class="track-comment--body">
+                                        " {{ comment.body }} "
+                                        <form method="POST" action="{% url 'comment-delete' comment.pk %}">
+                                            {% csrf_token %}
+                                            <input value="delete" type="submit"></input>
+                                        </form>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="track-comment--form">
+                        <form method="POST" action="{% url 'comment-create' track.pk %}">
+                            {% csrf_token %}
+                            {{ form.errors }}
+                            {{ form.as_p }}
+                            <input type="submit"></input>
+                        </form>
+                    </div>
 
-                            <div class="track--upload">
-                                <a class="track-upload--link" href="{% url 'track-detail' track.pk %}">Upload</a>
-                            </div>
+                    <div class="track--upload">
+                        <a class="track-upload--link" href="{% url 'track-detail' track.pk %}">Upload</a>
+                    </div>
 
-                        </div>
-                    </li>
-            </ul>
-        </div>
+                </div>
+            </li>
+        </ul>
+    </div>
 
     <!-- TODO: make this work -->
     {# if track.is_liked_by current_user #}

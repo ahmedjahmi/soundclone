@@ -1,4 +1,7 @@
-from django.http import Http404
+import json
+
+from django.http import Http404, HttpResponse
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
@@ -48,7 +51,7 @@ def track_detail_view(request, pk):
     return render(
         request,
         "templates/track_detail.html",
-        {'track': track, 'comments': comments, 'form': form, 'playlists': playlists }
+        {'track': track, 'comments': comments, 'form': form, 'playlists': playlists}
     )
 
 
@@ -58,8 +61,12 @@ def track_like_view(request, pk):
         if track.is_liked_by(request.user):
             return redirect('track-detail', pk=track.pk)
         else:
-            like = Like.objects.create(track=track, user=request.user)
-            return redirect('track-detail', pk=track.pk)
+            Like.objects.create(track=track, user=request.user)
+            if request.is_ajax():
+                response = json.dumps({'like': track.like_set.count()})
+                return HttpResponse(response, status=201)
+            else:
+                return redirect('track-detail', pk=track.pk)
     else:
         return redirect('login')
 
@@ -67,9 +74,11 @@ def track_like_view(request, pk):
 def track_unlike_view(request, pk):
     if request.user.is_authenticated:
         track = Track.objects.get(pk=pk)
-        if track.is_liked_by(request.user):
-            track.like_set.filter(user=request.user).delete()
-            return redirect('track-detail', pk=track.pk)
+        track.like_set.filter(user=request.user).delete()
+
+        if request.is_ajax():
+            response = json.dumps({'like': track.like_set.count()})
+            return HttpResponse(response, status=201)
         else:
             return redirect('track-detail', pk=track.pk)
     else:
@@ -174,8 +183,6 @@ def playlist_add_track_view(request, playlist_pk, track_pk):
 
     else:
         return redirect('login')
-
-# def playlist_add_track_view
 
 # def playlist_remove_track_view
 

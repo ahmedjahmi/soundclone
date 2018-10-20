@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class Track(models.Model):
     title = models.CharField(max_length=255)
     file = models.FileField(upload_to='uploads/%Y/%m/%d/')
-    # the following line is probably redudndant now that we're adding artist profile
+    # the following line is probably redudndant now that we have artist profile
     artist_name = models.CharField(max_length=225)
     duration = models.IntegerField()
     artwork = models.ImageField(
