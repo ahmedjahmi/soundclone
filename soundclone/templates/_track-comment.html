@@ -1,0 +1,12 @@
+<li class="comment--li">
+    <div class="track-comment--user">
+        {{ comment.user }} said
+    </div>
+    <div class="track-comment--body">
+        " {{ comment.body }} "
+        <form method="POST" action="{% url 'comment-delete' comment.pk %}">
+            {% csrf_token %}
+            <input value="delete" type="submit"></input>
+        </form>
+    </div>
+</li>

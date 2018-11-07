@@ -1,6 +1,7 @@
 import json
 
 from django.http import Http404, HttpResponse
+from django.template.response import TemplateResponse
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
@@ -97,13 +98,21 @@ def comment_create_view(request, pk):
                 # TODO: save model form here instead
                 cd = form.cleaned_data
 
-                Comment.objects.create(
+                comment = Comment.objects.create(
                     user=request.user,
                     track=track,
                     body=cd['body']
-                )
-
-                return redirect('track-detail', pk=track.pk)
+                    )
+                if request.is_ajax():
+                    return TemplateResponse(
+                        request,
+                        "_track-comment.html",
+                        {
+                            'comment': comment
+                        },
+                        status=201)
+                else:
+                    return redirect('track-detail', pk=track.pk)
             else:
                 return render(
                     request,

@@ -42,6 +42,19 @@
                 $('.track-info--likes').html(data.like + " Likes" );
             });
         });
+
+        $('.comment--form').on('submit', function(event){
+            event.preventDefault();
+
+            $.ajax({
+                url:"/tracks/{{track.pk}}/comment",
+                method: "POST",
+                data: $(this).serialize(),
+                dataType: "html"
+            }).done(function(data, textStatus, jqXHR) {
+                $('.comment--ul').append(data);
+            });
+        });
     });
 
 </script>
@@ -108,9 +121,9 @@
 
                 <div class="track-comment">
                     <div class="track-comment--list">
-                        <ul>
+                        <ul class="comment--ul">
                             {% for comment in comments %}
-                                <li>
+                                <li class="comment--li">
                                     <div class="track-comment--user">
                                         {{ comment.user }} said
                                     </div>
@@ -126,7 +139,7 @@
                         </ul>
                     </div>
                     <div class="track-comment--form">
-                        <form method="POST" action="{% url 'comment-create' track.pk %}">
+                        <form class="comment--form" method="POST" action="{% url 'comment-create' track.pk %}">
                             {% csrf_token %}
                             {{ form.errors }}
                             {{ form.as_p }}
@@ -135,7 +148,7 @@
                     </div>
 
                     <div class="track--upload">
-                        <a class="track-upload--link" href="{% url 'track-detail' track.pk %}">Upload</a>
+                        <a class="track-upload--link" href="{% url 'track-create' %}">Upload</a>
                     </div>
 
                 </div>
