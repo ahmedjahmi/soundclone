@@ -3,8 +3,8 @@
         {{ comment.user }} said
     </div>
     <div class="track-comment--body">
-        " {{ comment.body }} "
-        <form method="POST" action="{% url 'comment-delete' comment.pk %}">
+        "{{ comment.body }}"
+        <form method="POST" action="{% url 'comment-delete' comment.pk %}" class="comment-delete">
             {% csrf_token %}
             <input value="delete" type="submit"></input>
         </form>

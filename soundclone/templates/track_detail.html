@@ -47,12 +47,29 @@
             event.preventDefault();
 
             $.ajax({
-                url:"/tracks/{{track.pk}}/comment",
-                method: "POST",
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
                 data: $(this).serialize(),
                 dataType: "html"
             }).done(function(data, textStatus, jqXHR) {
                 $('.comment--ul').append(data);
+                $('input[type="text"], textarea').val('');
+            });
+        });
+
+        $('.comment--ul').on('submit', '.comment-delete', function(event) {
+            event.preventDefault();
+
+            var deletedComment = $(this).parents('.comment--li');
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
+                data: $(this).serialize(),
+                dataType: "json"
+            }).done(function(data, textStatus, jqXHR) {
+                deletedComment.remove();
+                // alert(data.message);
             });
         });
     });
@@ -113,7 +130,7 @@
                     </div>
                     <button class="modal--trigger">Add to playlist</button>
                     <div class="track-audio">
-                        <audio class="track-audio--sound" src="{{ track.file.url }}" autoplay type="audio/mp3" controls>
+                        <audio class="track-audio--sound" src="{{ track.file.url }}" type="audio/mp3" controls>
                             Your browser does not support the <code>audio</code> element.
                         </audio>
                     </div>
@@ -128,8 +145,8 @@
                                         {{ comment.user }} said
                                     </div>
                                     <div class="track-comment--body">
-                                        " {{ comment.body }} "
-                                        <form method="POST" action="{% url 'comment-delete' comment.pk %}">
+                                        "{{ comment.body }}"
+                                        <form class="comment-delete" method="POST" action="{% url 'comment-delete' comment.pk %}">
                                             {% csrf_token %}
                                             <input value="delete" type="submit"></input>
                                         </form>

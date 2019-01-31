@@ -4,8 +4,9 @@ from django.http import Http404, HttpResponse
 from django.template.response import TemplateResponse
 
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 from .models import Track, Like, Comment, Playlist
 from .forms import TrackForm, CommentForm, PlaylistForm
@@ -13,13 +14,15 @@ from .forms import TrackForm, CommentForm, PlaylistForm
 
 def track_list_view(request):
     tracks = Track.objects.all()
+
     return render(request, "templates/track_list.html", {'tracks': tracks})
 
 
+@login_required
 def track_create_view(request):
     if request.method == 'POST':
-        # take data from form and save as new record
         form = TrackForm(request.POST, request.FILES)
+
         if form.is_valid():
             # TODO: save model form here instead
             cd = form.cleaned_data
@@ -40,158 +43,152 @@ def track_create_view(request):
                 )
     else:
         form = TrackForm()
+
         return render(request, "templates/track_create.html", {'form': form})
 
 
 def track_detail_view(request, pk):
     track = Track.objects.get(pk=pk)
-    # Comment.object.filter(track=track) is the same thing
     comments = track.comment_set.all()
     form = CommentForm()
-    playlists = request.user.playlist_set.all()
+    context_data = {'track': track, 'comments': comments, 'form': form}
+
+    if request.user.is_authenticated:
+        playlists = request.user.playlist_set.all()
+        context_data['playlists'] = playlists
+
     return render(
         request,
         "templates/track_detail.html",
-        {'track': track, 'comments': comments, 'form': form, 'playlists': playlists}
+        context_data
     )
 
 
+@login_required
 def track_like_view(request, pk):
-    if request.user.is_authenticated:
-        track = Track.objects.get(pk=pk)
-        if track.is_liked_by(request.user):
-            return redirect('track-detail', pk=track.pk)
-        else:
-            Like.objects.create(track=track, user=request.user)
-            if request.is_ajax():
-                response = json.dumps({'like': track.like_set.count()})
-                return HttpResponse(response, status=201)
-            else:
-                return redirect('track-detail', pk=track.pk)
+    track = Track.objects.get(pk=pk)
+
+    if track.is_liked_by(request.user):
+        return redirect('track-detail', pk=track.pk)
     else:
-        return redirect('login')
-
-
-def track_unlike_view(request, pk):
-    if request.user.is_authenticated:
-        track = Track.objects.get(pk=pk)
-        track.like_set.filter(user=request.user).delete()
+        Like.objects.create(track=track, user=request.user)
 
         if request.is_ajax():
             response = json.dumps({'like': track.like_set.count()})
+
             return HttpResponse(response, status=201)
         else:
             return redirect('track-detail', pk=track.pk)
+
+
+@login_required
+def track_unlike_view(request, pk):
+    track = Track.objects.get(pk=pk)
+    track.like_set.filter(user=request.user).delete()
+
+    if request.is_ajax():
+        response = json.dumps({'like': track.like_set.count()})
+
+        return HttpResponse(response, status=201)
     else:
-        return redirect('login')
-# TODO: add decorator for login authorization
+        return redirect('track-detail', pk=track.pk)
 
 
+@login_required
 def comment_create_view(request, pk):
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-
-            # take data from form and save as new record
-            track = Track.objects.get(pk=pk)
-            form = CommentForm(request.POST)
-            if form.is_valid():
-                # TODO: save model form here instead
-                cd = form.cleaned_data
-
-                comment = Comment.objects.create(
-                    user=request.user,
-                    track=track,
-                    body=cd['body']
-                    )
-                if request.is_ajax():
-                    return TemplateResponse(
-                        request,
-                        "_track-comment.html",
-                        {
-                            'comment': comment
-                        },
-                        status=201)
-                else:
-                    return redirect('track-detail', pk=track.pk)
-            else:
-                return render(
-                    request,
-                    "templates/track_detail.html",
-                    {
-                        'track': track,
-                        'form': form,
-                        'comments': track.comment_set.all()
-                    }
-                )
-        else:
-            return redirect('login')
-    else:
+    if not request.method == 'POST':
         raise Http404("Invalid request, sorry!")
 
+    track = Track.objects.get(pk=pk)
+    form = CommentForm(request.POST)
 
-def comment_delete_view(request, pk):
-    if request.user.is_authenticated:
-        comment = Comment.objects.get(pk=pk)
-        track = comment.track
+    if form.is_valid():
+        # TODO: save model form here instead
+        cd = form.cleaned_data
 
-        comment.delete()
-        return redirect('track-detail', pk=track.pk)
+        comment = Comment.objects.create(
+            user=request.user,
+            track=track,
+            body=cd['body']
+            )
+        if request.is_ajax():
+            return TemplateResponse(
+                request,
+                "_track-comment.html",
+                {'comment': comment},
+                status=201
+            )
+        else:
+            return redirect('track-detail', pk=track.pk)
     else:
-        return redirect('login')
+        return render(
+            request,
+            "templates/track_detail.html",
+            {
+                'track': track,
+                'form': form,
+                'comments': track.comment_set.all()
+            }
+        )
 
 
+@login_required
+def comment_delete_view(request, pk):
+    comment = Comment.objects.get(pk=pk)
+    track = comment.track
+
+    if comment.user == request.user:
+        comment.delete()
+        if request.is_ajax():
+            response = json.dumps({'message': 'All gone!'})
+            return HttpResponse(response, status=201)
+        else:
+            return redirect('track-detail', pk=track.pk)
+
+
+@login_required
 def playlist_create_view(request):
     if request.method == 'POST':
-        if request.user.is_authenticated:
+        form = PlaylistForm(request.POST)
 
-            form = PlaylistForm(request.POST)
-            if form.is_valid():
+        if form.is_valid():
+            cd = form.cleaned_data
+            playlist = Playlist.objects.create(
+                name=cd['name'],
+                user=request.user
+            )
 
-                cd = form.cleaned_data
-
-                playlist = Playlist.objects.create(
-                    name=cd['name'],
-                    user=request.user
-                )
-
-                return redirect('playlist-detail', pk=playlist.pk)
-            else:
-                return render(
-                    request, "templates/playlist_create.html", {'form': form}
-                    )
+            return redirect('playlist-detail', pk=playlist.pk)
         else:
-            return redirect('login')
+            return render(
+                request, "templates/playlist_create.html", {'form': form}
+                )
     else:
         form = PlaylistForm()
+
         return render(request, "templates/playlist_create.html", {'form': form})
 
 
+@login_required
 def playlist_detail_view(request, pk):
-    if request.user.is_authenticated:
-
         playlist = Playlist.objects.get(pk=pk)
         tracks = playlist.tracks.all()
+
         return render(
             request,
             "templates/playlist_detail.html",
             {'playlist': playlist, 'tracks': tracks}
             )
-    else:
-        return redirect('login')
 
 
+@login_required
 def playlist_add_track_view(request, playlist_pk, track_pk):
-    if request.user.is_authenticated:
-
         track = Track.objects.get(pk=track_pk)
         playlist = Playlist.objects.get(pk=playlist_pk)
 
         playlist.tracks.add(track)
 
         return redirect('playlist-detail', pk=playlist.pk)
-
-    else:
-        return redirect('login')
 
 # def playlist_remove_track_view
 
